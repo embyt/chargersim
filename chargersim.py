@@ -23,10 +23,7 @@ class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         # determine targetted charger
         port = self.request.getsockname()[1]
-        charger_type = port % START_PORT // CHARGER_AREA
-        charger_index = port % START_PORT % CHARGER_AREA
-        logging.info("GET for charger %s index %s", charger_type, charger_index)
-        charger = self.chargers[charger_type][charger_index]
+        charger = self.chargers[port]
 
         # Sending an '200 OK' response
         self.send_response(200)
@@ -45,7 +42,7 @@ class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
 class ChargerSim:
     MAIN_RECURRENCE = 1    # second
 
-    chargers = []  # array of type, index
+    chargers = {}  # handle to the correspondig chargers
     servers = []
 
     def __init__(self):
@@ -54,18 +51,22 @@ class ChargerSim:
         logging.getLogger("urllib3").setLevel(logging.WARNING)
 
         # setup chargers and http sockets
-        for charger_type in range(2):
-            chargers = []
-            for charger_index in range(5):
-                port = START_PORT + charger_type * CHARGER_AREA + charger_index
-                chargers.append(Charger())
-                self.servers.append(socketserver.TCPServer(
-                    ("", port),
-                    HttpRequestHandler
-                ))
-            self.chargers.append(chargers)
-
         HttpRequestHandler.chargers = self.chargers
+        port = START_PORT
+        self.chargers[port] = Charger(0)
+        self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
+        port += 1
+        self.chargers[port] = Charger(10)
+        self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
+        port += 1
+        self.chargers[port] = Charger(20)
+        self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
+        port += 1
+        self.chargers[port] = Charger(30)
+        self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
+        port += 1
+        self.chargers[port] = Charger(40)
+        self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
 
     def run(self):
         # listen for server requests
@@ -78,9 +79,8 @@ class ChargerSim:
                 if cur_server in r:
                     cur_server.handle_request()
             # update charger states
-            for charger_type in self.chargers:
-                for cur_charger in charger_type:
-                    cur_charger.update_state()
+            for cur_charger in self.chargers.values():
+                cur_charger.update_state()
 
 
 def main():
