@@ -2,6 +2,7 @@
 # Copyright (c) 2021 embyt GmbH. All rights reserved.
 # Author: Roman Morawek <rmorawek@embyt.com>
 
+from devicegoe import DeviceGoe
 import time
 import logging
 import traceback
@@ -33,7 +34,7 @@ class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
 
         # derive answer
-        json = charger.handle_get_data()
+        json = charger.handle_get_data(self.path)
 
         # Writing the HTML contents with UTF-8
         self.wfile.write(bytes(json, "utf8"))
@@ -53,19 +54,19 @@ class ChargerSim:
         # setup chargers and http sockets
         HttpRequestHandler.chargers = self.chargers
         port = START_PORT
-        self.chargers[port] = Charger(0)
+        self.chargers[port] = DeviceGoe(0)
         self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
         port += 1
-        self.chargers[port] = Charger(10, 1)
+        self.chargers[port] = DeviceGoe(10, 1)
         self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
         port += 1
-        self.chargers[port] = Charger(20)
+        self.chargers[port] = DeviceGoe(20)
         self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
         port += 1
-        self.chargers[port] = Charger(30, 2)
+        self.chargers[port] = DeviceGoe(30, 2)
         self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
         port += 1
-        self.chargers[port] = Charger(40)
+        self.chargers[port] = DeviceGoe(40)
         self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
 
     def run(self):

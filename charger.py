@@ -2,7 +2,6 @@
 # Copyright (c) 2021 embyt GmbH. All rights reserved.
 # Author: Roman Morawek <rmorawek@embyt.com>
 
-import logging
 from datetime import datetime
 
 
@@ -38,7 +37,7 @@ class Charger:
         self.cur_i = [0, 0, 0]
         self.cur_u = [230, 230, 230]
 
-    def handle_get_data(self):
+    def handle_get_data(self, url_path):
         attr_list = [(attr, getattr(self, attr)) for attr in dir(self)
                      if not attr.startswith('_') and not callable(getattr(Charger, attr))]
         attr_strings = [str(item) for item in attr_list]
