@@ -44,6 +44,7 @@ class Charger:
         return "\n".join(attr_strings) + "\n"
 
     def update_state(self):
+        minute_in_session = (datetime.now().minute - self._session_start) % 60
         if not self._last_update:
             self._last_update = datetime.now()
 
@@ -56,8 +57,11 @@ class Charger:
         self.e_session += energy
         self.e_total += energy
 
+        if minute_in_session > self._CHARGING_ALL_OFF:
+            self.e_session = 0
+
     def _get_charger_current(self):
-        minute_in_session = datetime.now().minute - self._session_start
+        minute_in_session = (datetime.now().minute - self._session_start) % 60
         if not self._CHARGING_START <= minute_in_session < self._CHARGING_STOP:
             return 0
 
