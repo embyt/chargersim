@@ -56,13 +56,13 @@ class ChargerSim:
         self.chargers[port] = Charger(0)
         self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
         port += 1
-        self.chargers[port] = Charger(10)
+        self.chargers[port] = Charger(10, 1)
         self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
         port += 1
         self.chargers[port] = Charger(20)
         self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
         port += 1
-        self.chargers[port] = Charger(30)
+        self.chargers[port] = Charger(30, 2)
         self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
         port += 1
         self.chargers[port] = Charger(40)
