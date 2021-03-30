@@ -3,7 +3,6 @@
 # Author: Roman Morawek <rmorawek@embyt.com>
 
 import logging
-
 from datetime import datetime
 
 
