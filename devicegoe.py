@@ -25,11 +25,18 @@ class DeviceGoe(Charger):
         if url_path != "/status":
             return super().handle_get_data(url_path)
 
+        # determine charging state
+        minute_in_session = (datetime.now().minute - self._session_start) % 60
+        car = 1  # default
+        if self._CHARGING_START <= minute_in_session < self._CHARGING_STOP:
+            car = 2
+        elif self._CHARGING_STOP <= minute_in_session < self._CHARGING_CABLE_CAR_OFF:
+            car = 4
         result = {
             "version": "B",
             "rbc": "251",
             "rbt": "2208867",
-            "car": "1",
+            "car": str(car),
             "amp": "10",
             "err": "0",
             "ast": "0",
