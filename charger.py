@@ -2,6 +2,8 @@
 # Copyright (c) 2021 embyt GmbH. All rights reserved.
 # Author: Roman Morawek <rmorawek@embyt.com>
 
+import logging
+
 from datetime import datetime
 
 
@@ -42,6 +44,10 @@ class Charger:
                      if not attr.startswith('_') and not callable(getattr(Charger, attr))]
         attr_strings = [str(item) for item in attr_list]
         return "\n".join(attr_strings) + "\n"
+
+    def handle_post_data(self, url_path, post_data):
+        logging.warning("unhandled POST request", url_path)
+        return ""
 
     def update_state(self):
         minute_in_session = (datetime.now().minute - self._session_start) % 60

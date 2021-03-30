@@ -2,6 +2,8 @@
 # Copyright (c) 2021 embyt GmbH. All rights reserved.
 # Author: Roman Morawek <rmorawek@embyt.com>
 
+import logging
+
 from charger import Charger
 
 
@@ -106,3 +108,15 @@ class DeviceGoe(Charger):
             "rn1": ""
         }
         return str(result)
+
+    def handle_post_data(self, url_path, post_data):
+        if not url_path.startswith("/mqtt?payload="):
+            return super().handle_post_data(url_path, post_data)
+        command = url_path[len("/mqtt?payload="):]
+        if command.startswith("amp="):
+            # set new charger current
+            self.req_max_i = int(command[len("amp="):])
+            logging.info("new charger current: %s", self.req_max_i)
+        else:
+            logging.warning("unhandled command: %s", command)
+        return ""

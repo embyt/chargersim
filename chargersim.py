@@ -2,8 +2,6 @@
 # Copyright (c) 2021 embyt GmbH. All rights reserved.
 # Author: Roman Morawek <rmorawek@embyt.com>
 
-from devicegoe import DeviceGoe
-import time
 import logging
 import traceback
 import http.server
@@ -11,6 +9,7 @@ import socketserver
 import select
 
 from charger import Charger
+from devicegoe import DeviceGoe
 
 
 START_PORT = 8000
@@ -18,14 +17,15 @@ CHARGER_AREA = 10  # number of ports between chargers
 NR_CHARGERS = 10  # number of instantiated chargers, must be less than CHARGER_AREA
 
 
-class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
+class HttpRequestHandler(http.server.BaseHTTPRequestHandler):
     chargers = None  # handle to the correspondig chargers
 
-    def do_GET(self):
+    def _get_charger(self):
         # determine targetted charger
         port = self.request.getsockname()[1]
-        charger = self.chargers[port]
+        return self.chargers[port]
 
+    def _set_response(self, content):
         # Sending an '200 OK' response
         self.send_response(200)
         # Setting the header
@@ -33,11 +33,25 @@ class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
         # Whenever using 'send_header', you also have to call 'end_headers'
         self.end_headers()
 
-        # derive answer
-        json = charger.handle_get_data(self.path)
-
         # Writing the HTML contents with UTF-8
-        self.wfile.write(bytes(json, "utf8"))
+        self.wfile.write(bytes(content, "utf8"))
+
+    def do_GET(self):
+        # derive answer
+        charger = self._get_charger()
+        response = charger.handle_get_data(self.path)
+        self._set_response(response)
+
+    def do_POST(self):
+        content_length = int(self.headers['Content-Length'])
+        post_data = self.rfile.read(content_length)
+        logging.info("POST request,\nPath: %s\nHeaders:\n%s\n\nBody:\n%s\n",
+                     str(self.path), str(self.headers), post_data.decode('utf-8'))
+
+        # derive answer
+        charger = self._get_charger()
+        response = charger.handle_post_data(self.path, post_data)
+        self._set_response(response)
 
 
 class ChargerSim:
