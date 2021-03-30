@@ -22,12 +22,12 @@ class Charger:
 
     # internal data
     req_max_i = None
-    e_total = 0       # total energy
-    e_session = 0     # session energy
+    e_total = 0       # kWh, total energy
+    e_session = 0     # kWh, session energy
     charger_current = 0  # like cur_i
-    cur_power = 0     # current charging power
-    cur_i = None      # current charging current
-    cur_u = None      # current phase voltage
+    cur_power = 0     # W, current charging power
+    cur_i = None      # A, current charging current
+    cur_u = None      # V, current phase voltage
     nr_phases = 3    # current number of used phases
 
     _last_update = None
@@ -65,6 +65,8 @@ class Charger:
 
         if minute_in_session > self._CHARGING_ALL_OFF:
             self.e_session = 0
+        # set last update timestamp
+        self._last_update = datetime.now()
 
     def _get_charger_current(self):
         minute_in_session = (datetime.now().minute - self._session_start) % 60

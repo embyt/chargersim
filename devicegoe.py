@@ -42,7 +42,7 @@ class DeviceGoe(Charger):
             "dwo": "0",
             "adi": "1",
             "uby": "0",
-            "eto": str(self.e_total * 360000),
+            "eto": str(self.e_total * 10),
             "wst": "3",
             "nrg": [
                 self.cur_u[0], self.cur_u[1], self.cur_u[2], 0,
