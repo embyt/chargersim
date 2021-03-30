@@ -63,7 +63,7 @@ class DeviceGoe(Charger):
             "aho": "2",
             "afi": "8",
             "ama": str(self._DEV_MAX_I),
-            "amp": str(self.charger_current),
+            "amp": str(self.req_max_i),
             "al1": "11",
             "al2": "12",
             "al3": "15",
