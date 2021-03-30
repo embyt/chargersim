@@ -3,6 +3,7 @@
 # Author: Roman Morawek <rmorawek@embyt.com>
 
 import logging
+import json
 
 from charger import Charger
 
@@ -107,7 +108,7 @@ class DeviceGoe(Charger):
             "rn9": "",
             "rn1": ""
         }
-        return str(result)
+        return json.dumps(result)
 
     def handle_post_data(self, url_path, post_data):
         if not url_path.startswith("/mqtt?payload="):
