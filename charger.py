@@ -3,6 +3,7 @@
 # Author: Roman Morawek <rmorawek@embyt.com>
 
 import logging
+import random
 from datetime import datetime
 
 
@@ -37,6 +38,7 @@ class Charger:
         self.nr_phases = phases
         self.cur_i = [0, 0, 0]
         self.cur_u = [230, 230, 230]
+        self.e_total = random.random() * 5000   # 2.500 kWh average start
 
     def handle_get_data(self, url_path):
         attr_list = [(attr, getattr(self, attr)) for attr in dir(self)
@@ -56,7 +58,9 @@ class Charger:
         sec_since_last_update = (datetime.now() - self._last_update).total_seconds()
         self.charger_current = self._get_charger_current()
         for phase in range(3):
-            self.cur_i[phase] = self.charger_current if phase < self.nr_phases else 0
+            self.cur_u[phase] = int(random.gauss(230, 3))
+            self.cur_i[phase] = random.gauss(
+                self.charger_current, 0.05) if phase < self.nr_phases else 0
         self.cur_power = sum([self.cur_i[ph] * self.cur_u[ph] for ph in range(3)])
         energy = self.cur_power * sec_since_last_update / 3600000
         self.e_session += energy
