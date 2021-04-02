@@ -60,7 +60,7 @@ class Charger:
         for phase in range(3):
             self.cur_u[phase] = int(random.gauss(230, 3))
             self.cur_i[phase] = random.gauss(
-                self.charger_current, 0.05) if phase < self.nr_phases else 0
+                self.charger_current, 0.05) if self.charger_current and phase < self.nr_phases else 0
         self.cur_power = sum([self.cur_i[ph] * self.cur_u[ph] for ph in range(3)])
         energy = self.cur_power * sec_since_last_update / 3600000
         self.e_session += energy
