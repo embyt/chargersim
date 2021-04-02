@@ -25,11 +25,11 @@ class HttpRequestHandler(http.server.BaseHTTPRequestHandler):
         port = self.request.getsockname()[1]
         return self.chargers[port]
 
-    def _set_response(self, content):
+    def _set_response(self, content, content_type):
         # Sending an '200 OK' response
         self.send_response(200)
         # Setting the header
-        self.send_header("Content-type", "application/json")
+        self.send_header("Content-type", content_type)
         # Whenever using 'send_header', you also have to call 'end_headers'
         self.end_headers()
 
@@ -39,8 +39,8 @@ class HttpRequestHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         # derive answer
         charger = self._get_charger()
-        response = charger.handle_get_data(self.path)
-        self._set_response(response)
+        response, content_type = charger.handle_get_data(self.path)
+        self._set_response(response, content_type)
 
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
@@ -48,8 +48,8 @@ class HttpRequestHandler(http.server.BaseHTTPRequestHandler):
 
         # derive answer
         charger = self._get_charger()
-        response = charger.handle_post_data(self.path, post_data)
-        self._set_response(response)
+        response, content_type = charger.handle_post_data(self.path, post_data)
+        self._set_response(response, content_type)
 
 
 class ChargerSim:

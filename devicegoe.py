@@ -117,7 +117,7 @@ class DeviceGoe(Charger):
             "rn9": "",
             "rn1": ""
         }
-        return json.dumps(result)
+        return json.dumps(result), "application/json"
 
     def handle_post_data(self, url_path, post_data):
         if not url_path.startswith("/mqtt?payload="):
@@ -129,4 +129,4 @@ class DeviceGoe(Charger):
             logging.info("new charger current: %s", self.req_max_i)
         else:
             logging.warning("unhandled command: %s", command)
-        return ""
+        return "", "text/plain"

@@ -60,11 +60,11 @@ class DeviceCircontrol(Charger):
         }
 
         if url_path == "/services/cpi/socketInfo.xml":
-            return self._get_socket_info(data)
+            return self._get_socket_info(data), "text/xml"
         if url_path == "/services/cpi/chargeInfo.xml":
-            return self._get_charge_info(data)
+            return self._get_charge_info(data), "text/xml"
         if url_path == "/services/cpi/chargeState.xml":
-            return self._get_charge_state(data)
+            return self._get_charge_state(data), "text/xml"
 
         return super().handle_get_data(url_path)
 
@@ -197,7 +197,7 @@ class DeviceCircontrol(Charger):
             for tag in xml.findall('current'):
                 self.req_max_i = int(tag.text)
                 logging.info("new charger current: %s", self.req_max_i)
-            return ""
+            return "", "text/plain"
 
         if url_path == "/services/cpi/plugCurrent.xml":
             # reduce current is only effective during charging
@@ -206,6 +206,6 @@ class DeviceCircontrol(Charger):
                 for tag in xml.findall('current'):
                     self.req_max_i = int(tag.text)
                     logging.info("new charger current: %s", self.req_max_i)
-            return ""
+            return "", "text/plain"
 
         return super().handle_post_data(url_path, post_data)

@@ -15,7 +15,7 @@ class Charger:
     _CHARGING_ALL_OFF = 25  # minutes
 
     _CAR_MAX_POWER = 22  # kW
-    _DEV_MAX_I = 32  # kW
+    _DEV_MAX_I = 32  # A
 
     # config settings
     _session_start = 0
@@ -44,11 +44,11 @@ class Charger:
         attr_list = [(attr, getattr(self, attr)) for attr in dir(self)
                      if not attr.startswith('_') and not callable(getattr(Charger, attr))]
         attr_strings = [str(item) for item in attr_list]
-        return "\n".join(attr_strings) + "\n"
+        return "\n".join(attr_strings) + "\n", "text/plain"
 
     def handle_post_data(self, url_path, post_data):
         logging.warning("unhandled POST request", url_path)
-        return ""
+        return "", "text/plain"
 
     def update_state(self):
         minute_in_session = (datetime.now().minute - self._session_start) % 60
