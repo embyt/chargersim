@@ -29,7 +29,7 @@ class DeviceGoe(Charger):
         # determine charging state
         minute_in_session = (datetime.now().minute - self._session_start) % 60
         car = 1  # default
-        if self._CHARGING_START <= minute_in_session < self._CHARGING_STOP:
+        if self.is_charging():
             car = 2
         elif self._CHARGING_STOP <= minute_in_session < self._CHARGING_CABLE_CAR_OFF:
             car = 4

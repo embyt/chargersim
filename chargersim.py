@@ -8,8 +8,8 @@ import http.server
 import socketserver
 import select
 
-from charger import Charger
 from devicegoe import DeviceGoe
+from devicecircontrol import DeviceCircontrol
 
 
 START_PORT = 8000
@@ -79,6 +79,22 @@ class ChargerSim:
         self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
         port += 1
         self.chargers[port] = DeviceGoe(40)
+        self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
+
+        port += 1
+        self.chargers[port] = DeviceCircontrol(0)
+        self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
+        port += 1
+        self.chargers[port] = DeviceCircontrol(10, 1)
+        self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
+        port += 1
+        self.chargers[port] = DeviceCircontrol(20)
+        self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
+        port += 1
+        self.chargers[port] = DeviceCircontrol(30, 2)
+        self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
+        port += 1
+        self.chargers[port] = DeviceCircontrol(40)
         self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
 
     def run(self):

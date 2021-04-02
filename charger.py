@@ -79,6 +79,6 @@ class Charger:
         currents = [self._DEV_MAX_I, self._CAR_MAX_POWER, self.req_max_i]
         return min(x for x in currents if x is not None)
 
-    def _simulate_charging(self, target_power):
-        # charging
-        self.cur_power = target_power
+    def is_charging(self):
+        minute_in_session = (datetime.now().minute - self._session_start) % 60
+        return self._CHARGING_START <= minute_in_session < self._CHARGING_STOP
