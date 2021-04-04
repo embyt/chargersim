@@ -51,6 +51,15 @@ class HttpRequestHandler(http.server.BaseHTTPRequestHandler):
         response, content_type = charger.handle_post_data(self.path, post_data)
         self._set_response(response, content_type)
 
+    def do_PUT(self):
+        content_length = int(self.headers['Content-Length'])
+        post_data = self.rfile.read(content_length)
+
+        # derive answer
+        charger = self._get_charger()
+        response, content_type = charger.handle_post_data(self.path, post_data)
+        self._set_response(response, content_type)
+
 
 class ChargerSim:
     MAIN_RECURRENCE = 1    # second
