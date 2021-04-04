@@ -41,7 +41,7 @@ class DeviceGoe(Charger):
             "amp": "10",
             "err": "0",
             "ast": "0",
-            "alw": "1",
+            "alw": "1" if self.charger_current > 0 or not self.is_charging() else "0",
             "stp": "0",
             "cbl": "0",
             "pha": "8",

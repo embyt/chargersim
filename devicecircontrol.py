@@ -35,7 +35,11 @@ class DeviceCircontrol(Charger):
     def handle_get_data(self, url_path):
         # determine charging data
         minute_in_session = (datetime.now().minute - self._session_start) % 60
-        state = 8  # todo
+        state = 0  # default
+        if self.is_charging():
+            state = 8
+        elif self._CHARGING_STOP <= minute_in_session < self._CHARGING_CABLE_CAR_OFF:
+            state = 10
         data = {
             'requestDate': datetime.now().timestamp(),
             'beginDate': datetime.now().timestamp() - (minute_in_session - self._CHARGING_START) * 60
@@ -47,6 +51,9 @@ class DeviceCircontrol(Charger):
             'activeEnergy': self.e_total,
             'partialActiveEnergy': self.e_session,
             'state': state,
+            'vehicleConnected': "T" if self.is_charging() or
+            self._CHARGING_STOP <= minute_in_session < self._CHARGING_CABLE_CAR_OFF else "F",
+            'locked': "T" if self.is_charging() else "F",
             'chargingPhases': self.nr_phases,
             'currentL1': self.cur_i[0],
             'currentL2': self.cur_i[1],
@@ -61,6 +68,8 @@ class DeviceCircontrol(Charger):
 
         if url_path == "/services/cpi/socketInfo.xml":
             return self._get_socket_info(data), "text/xml"
+        if url_path == "/services/cpi/socketState.xml":
+            return self._get_socket_state(data), "text/xml"
         if url_path == "/services/cpi/chargeInfo.xml":
             return self._get_charge_info(data), "text/xml"
         if url_path == "/services/cpi/chargeState.xml":
@@ -86,6 +95,23 @@ class DeviceCircontrol(Charger):
               <meter>PLUG - Meter</meter>
             </socketInfo>
           </socketsInfo>
+        """.format(**data)
+
+    def _get_socket_state(self, data):
+        return """
+          <socketsState>
+            <socketState>
+              <id>672C24E1-780D-457B-BDD1-C1D3BB5A7D2B.476A1CEA-951D-436A-A6CC-F71B94E48725.4A2963B9-2831-4656-A9E7-328BA8490F52</id>
+              <name>EVSE.PLUG.SOCKET MODE 3</name>
+              <number>1</number>
+              <state > {state} < /state >
+              <previousState > 0 < /previousState >
+              <stateDate > {requestDate} < /stateDate >
+              <error>0</error>
+              <vehicleConnected>{vehicleConnected}</vehicleConnected>
+              <locked>{locked}</locked>
+            </socketState>
+          </socketsState>
         """.format(**data)
 
     def _get_charge_info(self, data):
