@@ -96,7 +96,7 @@ class Charger:
         if datetime.now() > self.next_state_change:
             # state transition
             if self.state != ChargerState.UNPLUGGED_CAR:
-                self.state.value += 1
+                self.state = ChargerState(self.state.value + 1)
             else:
                 self.state = ChargerState.IDLE
                 self.last_start = datetime.now()
