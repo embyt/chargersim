@@ -107,8 +107,8 @@ class Charger:
         self.charger_current = self._get_charger_current()
         for phase in range(3):
             self.cur_u[phase] = int(random.gauss(230, 3))
-            self.cur_i[phase] = random.gauss(
-                self.charger_current, 0.05) if self.charger_current and phase < self.nr_phases else 0
+            self.cur_i[phase] = random.gauss(self.charger_current, 0.05) \
+                if self.charger_current and phase < self.nr_phases else 0
         self.cur_power = sum([self.cur_i[ph] * self.cur_u[ph] for ph in range(3)])
         energy = self.cur_power * sec_since_last_update / 3600000
         self.e_session += energy
@@ -127,4 +127,4 @@ class Charger:
         return min(x for x in currents if x is not None)
 
     def is_charging(self):
-        return self.state == ChargerState.CHARGING and self.req_max_i > 0
+        return self.state == ChargerState.CHARGING and self.req_max_i != 0
