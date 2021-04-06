@@ -38,7 +38,7 @@ class DeviceCircontrol(Charger):
         state = 0  # default
         if self.is_charging():
             state = 8
-        elif self._CHARGING_STOP <= minute_in_session < self._CHARGING_CABLE_CAR_OFF:
+        elif (self._CHARGING_STOP <= minute_in_session < self._CHARGING_CABLE_CAR_OFF) or self.req_max_i == 0:
             state = 10
         data = {
             'requestDate': datetime.now().timestamp(),
@@ -47,12 +47,12 @@ class DeviceCircontrol(Charger):
             'plugCurrent': self._DEV_MAX_I,
             'supportedCurrent': self._DEV_MAX_I,
             'chargeTime': (minute_in_session - self._CHARGING_START) * 60 if self.is_charging() else 0,
-            'stopped': 1 if self._CHARGING_STOP <= minute_in_session < self._CHARGING_CABLE_CAR_OFF else 0,
+            'stopped': 1 if (self._CHARGING_STOP <= minute_in_session < self._CHARGING_CABLE_CAR_OFF) or self.req_max_i == 0 else 0,
             'activeEnergy': self.e_total,
             'partialActiveEnergy': self.e_session,
             'state': state,
             'vehicleConnected': "T" if self.is_charging() or
-            self._CHARGING_STOP <= minute_in_session < self._CHARGING_CABLE_CAR_OFF else "F",
+            (self._CHARGING_STOP <= minute_in_session < self._CHARGING_CABLE_CAR_OFF) or self.req_max_i == 0 else "F",
             'locked': "T" if self.is_charging() else "F",
             'chargingPhases': self.nr_phases,
             'currentL1': self.cur_i[0],
@@ -233,5 +233,13 @@ class DeviceCircontrol(Charger):
                     self.req_max_i = int(tag.text)
                     logging.info("new charger current: %s", self.req_max_i)
             return "", "text/plain"
+
+        if url_path == "/services/cpi/stopCharge.xml":
+            self.req_max_i = 0
+            logging.info("stopping charging")
+
+        if url_path == "/services/cpi/startCharge.xml":
+            self.req_max_i = self._DEV_MAX_I
+            logging.info("resuming charging")
 
         return super().handle_post_data(url_path, post_data)

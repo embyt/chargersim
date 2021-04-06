@@ -81,4 +81,4 @@ class Charger:
 
     def is_charging(self):
         minute_in_session = (datetime.now().minute - self._session_start) % 60
-        return self._CHARGING_START <= minute_in_session < self._CHARGING_STOP
+        return (self._CHARGING_START <= minute_in_session < self._CHARGING_STOP) and self.req_max_i > 0

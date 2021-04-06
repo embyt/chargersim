@@ -31,7 +31,7 @@ class DeviceGoe(Charger):
         car = 1  # default
         if self.is_charging():
             car = 2
-        elif self._CHARGING_STOP <= minute_in_session < self._CHARGING_CABLE_CAR_OFF:
+        elif (self._CHARGING_STOP <= minute_in_session < self._CHARGING_CABLE_CAR_OFF) or self.req_max_i == 0:
             car = 4
         result = {
             "version": "B",
@@ -127,6 +127,15 @@ class DeviceGoe(Charger):
             # set new charger current
             self.req_max_i = int(command[len("amp="):])
             logging.info("new charger current: %s", self.req_max_i)
+        elif command.startswith("alw="):
+            # suspend/resume charging
+            is_enable = int(command[len("amp="):])
+            if is_enable:
+                self.req_max_i = self._DEV_MAX_I
+                logging.info("resuming charging")
+            else:
+                self.req_max_i = 0
+                logging.info("stopping charging")
         else:
             logging.warning("unhandled command: %s", command)
         return "", "text/plain"
