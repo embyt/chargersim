@@ -6,7 +6,7 @@ import logging
 from datetime import datetime
 import xml.etree.ElementTree as ET
 
-from charger import Charger
+from charger import Charger, ChargerState
 
 # Current values in A.
 # Power values in W.
@@ -34,25 +34,22 @@ from charger import Charger
 class DeviceCircontrol(Charger):
     def handle_get_data(self, url_path):
         # determine charging data
-        minute_in_session = (datetime.now().minute - self._session_start) % 60
         state = 0  # default
         if self.is_charging():
             state = 8
-        elif (self._CHARGING_STOP <= minute_in_session < self._CHARGING_CABLE_CAR_OFF) or self.req_max_i == 0:
+        elif self.state == ChargerState.STOPPED_AFTER_CHARGING or self.req_max_i == 0:
             state = 10
         data = {
             'requestDate': datetime.now().timestamp(),
-            'beginDate': datetime.now().timestamp() - (minute_in_session - self._CHARGING_START) * 60
-            if minute_in_session >= self._CHARGING_START else 0,
+            'beginDate': self.last_start.timestamp() if self.last_start else 0,
             'plugCurrent': self._DEV_MAX_I,
             'supportedCurrent': self._DEV_MAX_I,
-            'chargeTime': (minute_in_session - self._CHARGING_START) * 60 if self.is_charging() else 0,
-            'stopped': 1 if (self._CHARGING_STOP <= minute_in_session < self._CHARGING_CABLE_CAR_OFF) or self.req_max_i == 0 else 0,
+            'chargeTime': (datetime.now() - self.last_start).total_seconds() if self.last_start and self.is_charging() else 0,
+            'stopped': 1 if self.state == ChargerState.STOPPED_AFTER_CHARGING or self.req_max_i == 0 else 0,
             'activeEnergy': self.e_total,
             'partialActiveEnergy': self.e_session,
             'state': state,
-            'vehicleConnected': "T" if self.is_charging() or
-            (self._CHARGING_STOP <= minute_in_session < self._CHARGING_CABLE_CAR_OFF) or self.req_max_i == 0 else "F",
+            'vehicleConnected': "T" if ChargerState.PLUGGED_BEFORE_CHARGE.value <= self.state.value < ChargerState.UNPLUGGED_CAR.value else "F",
             'locked': "T" if self.is_charging() else "F",
             'chargingPhases': self.nr_phases,
             'currentL1': self.cur_i[0],

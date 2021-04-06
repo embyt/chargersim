@@ -6,7 +6,7 @@ import logging
 import json
 from datetime import datetime
 
-from charger import Charger
+from charger import Charger, ChargerState
 
 
 # see https://github.com/goecharger/go-eCharger-API-v1/blob/master/go-eCharger%20API%20v1%20DE.md
@@ -27,11 +27,10 @@ class DeviceGoe(Charger):
             return super().handle_get_data(url_path)
 
         # determine charging state
-        minute_in_session = (datetime.now().minute - self._session_start) % 60
         car = 1  # default
         if self.is_charging():
             car = 2
-        elif (self._CHARGING_STOP <= minute_in_session < self._CHARGING_CABLE_CAR_OFF) or self.req_max_i == 0:
+        elif self.state == ChargerState.STOPPED_AFTER_CHARGING or self.req_max_i == 0:
             car = 4
         result = {
             "version": "B",
@@ -122,11 +121,13 @@ class DeviceGoe(Charger):
     def handle_post_data(self, url_path, post_data):
         if not url_path.startswith("/mqtt?payload="):
             return super().handle_post_data(url_path, post_data)
+
         command = url_path[len("/mqtt?payload="):]
         if command.startswith("amp="):
             # set new charger current
             self.req_max_i = int(command[len("amp="):])
             logging.info("new charger current: %s", self.req_max_i)
+
         elif command.startswith("alw="):
             # suspend/resume charging
             is_enable = int(command[len("amp="):])
@@ -136,6 +137,8 @@ class DeviceGoe(Charger):
             else:
                 self.req_max_i = 0
                 logging.info("stopping charging")
+
         else:
             logging.warning("unhandled command: %s", command)
+
         return "", "text/plain"
