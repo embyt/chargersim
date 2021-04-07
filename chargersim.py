@@ -12,7 +12,7 @@ from devicegoe import DeviceGoe
 from devicecircontrol import DeviceCircontrol
 
 
-START_PORT = 8000
+START_PORT = 8100
 CHARGER_AREA = 10  # number of ports between chargers
 NR_CHARGERS = 10  # number of instantiated chargers, must be less than CHARGER_AREA
 
