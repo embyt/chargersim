@@ -4,6 +4,7 @@
 
 import logging
 import random
+import json
 from datetime import datetime, timedelta
 from enum import Enum
 
@@ -59,11 +60,19 @@ class Charger:
         self.next_state_change = self._get_next_statechange()
         self._last_update = datetime.now()
 
+    @staticmethod
+    def _serialize(obj):
+        """JSON serializer for objects not serializable by default json code"""
+        if isinstance(obj, datetime):
+            serial = obj.isoformat()
+            return serial
+        if isinstance(obj, ChargerState):
+            serial = obj.value
+            return serial
+        return obj.__dict__
+
     def handle_get_data(self, url_path):
-        attr_list = [(attr, getattr(self, attr)) for attr in dir(self)
-                     if not attr.startswith('_') and not callable(getattr(Charger, attr))]
-        attr_strings = [str(item) for item in attr_list]
-        return "\n".join(attr_strings) + "\n", "text/plain"
+        return json.dumps(self.__dict__, default=self._serialize), "application/json"
 
     def handle_post_data(self, url_path, post_data):
         logging.warning("unhandled POST request: %s", url_path)
