@@ -78,6 +78,7 @@ class ChargerSim:
         nr_phases = [3, 1, 3, 2, 3]
 
         port = START_PORT
+        # go-e chargers
         for i in range(5):
             self.chargers[port + i] = DeviceGoe(start_times[i], nr_phases[i])
             self.servers.append(socketserver.TCPServer(("", port + i), HttpRequestHandler))
@@ -87,6 +88,7 @@ class ChargerSim:
             self.servers.append(socketserver.TCPServer(("", port + i), HttpRequestHandler))
         port += 5
 
+        # Circontrol chargers
         for i in range(5):
             self.chargers[port + i] = DeviceCircontrol(start_times[i], nr_phases[i])
             self.servers.append(socketserver.TCPServer(("", port + i), HttpRequestHandler))
@@ -94,10 +96,11 @@ class ChargerSim:
         for i in range(5):
             self.chargers[port + i] = DeviceCircontrol(-0.3 * (i + 1), nr_phases[i])
             self.servers.append(socketserver.TCPServer(("", port + i), HttpRequestHandler))
-
         port += 5
+
+        # 100 more Circontrol chargers
         for i in range(100):
-            self.chargers[port + i] = DeviceCircontrol(1, nr_phases[i % len(nr_phases)])
+            self.chargers[port + i] = DeviceCircontrol(-1, nr_phases[i % len(nr_phases)])
             self.servers.append(socketserver.TCPServer(("", port + i), HttpRequestHandler))
 
     def run(self):
