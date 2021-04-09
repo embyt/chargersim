@@ -5,6 +5,7 @@
 import logging
 import random
 import json
+import os.path
 from datetime import datetime, timedelta
 from enum import Enum
 
@@ -33,6 +34,7 @@ class Charger:
     # a positive session start describes the minute when above sequence starts
     # a negative session start gives the random factor to apply for charge timing
     _session_start = 0
+    _config_file_path = None
 
     # internal data
     state = ChargerState.IDLE
@@ -49,27 +51,51 @@ class Charger:
 
     _last_update = None
 
-    def __init__(self, session_start, phases=3):
+    def __init__(self, session_start, phases=3, id=None):
         # init vars
         self._session_start = session_start
-        self.state = ChargerState.IDLE
+        if id is not None:
+            self._config_file_path = ".chargersim_cfg_" + str(id)
+
+        if self._config_file_path is not None and os.path.isfile(self._config_file_path):
+            # load data from dump file
+            with open(self._config_file_path, 'r') as dumpfile:
+                datadump = json.load(dumpfile)
+                # restore state, timing, and energy meter
+                self.state = ChargerState(datadump['state'])
+                self.next_state_change = datetime.strptime(
+                    datadump['next_state_change'], "%Y-%m-%dT%H:%M:%S")
+                self._last_update = datetime.strptime(
+                    datadump['_last_update'], "%Y-%m-%dT%H:%M:%S.%f")
+                self.cur_i = datadump['cur_i']
+        else:
+            # do a fresh initialization of data
+            self.state = ChargerState.IDLE
+            self.e_total = random.random() * 5000   # 2.500 kWh average start
+            self.cur_i = [0, 0, 0]
+            self.next_state_change = self._get_next_statechange()
+            self._last_update = datetime.now()
+
+        # this is always newly initialized
         self.nr_phases = phases
-        self.cur_i = [0, 0, 0]
         self.cur_u = [230, 230, 230]
-        self.e_total = random.random() * 5000   # 2.500 kWh average start
-        self.next_state_change = self._get_next_statechange()
-        self._last_update = datetime.now()
 
     @staticmethod
     def _serialize(obj):
         """JSON serializer for objects not serializable by default json code"""
         if isinstance(obj, datetime):
-            serial = obj.isoformat()
+            serial = obj.isoformat(timespec='seconds')
             return serial
         if isinstance(obj, ChargerState):
             serial = obj.value
             return serial
         return obj.__dict__
+
+    def _create_dump_file(self):
+        # save current data
+        if self._config_file_path is not None:
+            with open(self._config_file_path, 'w') as dumpfile:
+                json.dump(self.__dict__, dumpfile, default=self._serialize)
 
     def handle_get_data(self, url_path):
         return json.dumps(self.__dict__, default=self._serialize), "application/json"
@@ -110,6 +136,8 @@ class Charger:
                 self.state = ChargerState.IDLE
                 self.last_start = datetime.now()
             self.next_state_change = self._get_next_statechange()
+            # this is a good timing to backup config data
+            self._create_dump_file()
 
         # derive charging currents, power, energy
         sec_since_last_update = (datetime.now() - self._last_update).total_seconds()
