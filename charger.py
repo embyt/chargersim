@@ -136,6 +136,9 @@ class Charger:
                 self.state = ChargerState.IDLE
                 self.last_start = datetime.now()
             self.next_state_change = self._get_next_statechange()
+            # also set last update here to avoid long energy integration from other states
+            # this is i.e. important if we just restored a data dump and have a long period in between
+            self._last_update = datetime.now()
             # this is a good timing to backup config data
             self._create_dump_file()
 
