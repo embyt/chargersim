@@ -67,7 +67,7 @@ class Charger:
                 self._last_update = datetime.strptime(
                     datadump['_last_update'], "%Y-%m-%dT%H:%M:%S")
                 self.cur_i = datadump['cur_i']
-                self.req_max_i = datadump['req_max_i']
+                self.req_max_i = datadump['req_max_i'] if 'req_max_i' in datadump else None
         else:
             # do a fresh initialization of data
             self.state = ChargerState.IDLE
