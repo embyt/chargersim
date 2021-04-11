@@ -65,7 +65,7 @@ class Charger:
                 self.next_state_change = datetime.strptime(
                     datadump['next_state_change'], "%Y-%m-%dT%H:%M:%S")
                 self._last_update = datetime.strptime(
-                    datadump['_last_update'], "%Y-%m-%dT%H:%M:%S.%f")
+                    datadump['_last_update'], "%Y-%m-%dT%H:%M:%S")
                 self.cur_i = datadump['cur_i']
                 self.req_max_i = datadump['req_max_i']
         else:
