@@ -78,27 +78,29 @@ class ChargerSim:
         nr_phases = [3, 1, 3, 2, 3]
 
         port = START_PORT
+        # go-e chargers
         for i in range(5):
-            self.chargers[port + i] = DeviceGoe(start_times[i], nr_phases[i])
-            self.servers.append(socketserver.TCPServer(("", port + i), HttpRequestHandler))
-        port += 5
+            self.chargers[port] = DeviceGoe(start_times[i], nr_phases[i], port)
+            self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
+            port += 1
         for i in range(5):
-            self.chargers[port + i] = DeviceGoe(-0.3 * (i + 1), nr_phases[i])
-            self.servers.append(socketserver.TCPServer(("", port + i), HttpRequestHandler))
-        port += 5
-
+            self.chargers[port] = DeviceGoe(-0.3 * (i + 1), nr_phases[i], port)
+            self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
+            port += 1
+        # Circontrol chargers
         for i in range(5):
-            self.chargers[port + i] = DeviceCircontrol(start_times[i], nr_phases[i])
-            self.servers.append(socketserver.TCPServer(("", port + i), HttpRequestHandler))
-        port += 5
+            self.chargers[port] = DeviceCircontrol(start_times[i], nr_phases[i], port)
+            self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
+            port += 1
         for i in range(5):
-            self.chargers[port + i] = DeviceCircontrol(-0.3 * (i + 1), nr_phases[i])
-            self.servers.append(socketserver.TCPServer(("", port + i), HttpRequestHandler))
-
-        port += 5
+            self.chargers[port] = DeviceCircontrol(-0.3 * (i + 1), nr_phases[i], port)
+            self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
+            port += 1
+        # 100 more Circontrol chargers
         for i in range(100):
-            self.chargers[port + i] = DeviceCircontrol(1, nr_phases[i % len(nr_phases)])
-            self.servers.append(socketserver.TCPServer(("", port + i), HttpRequestHandler))
+            self.chargers[port] = DeviceCircontrol(-1, nr_phases[i % len(nr_phases)], port)
+            self.servers.append(socketserver.TCPServer(("", port), HttpRequestHandler))
+            port += 1
 
     def run(self):
         # listen for server requests
