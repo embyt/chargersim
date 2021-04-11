@@ -26,7 +26,6 @@ STATE_TIMES = [
 
 class Charger:
     # constant settings
-    _CAR_MAX_POWER = 22  # kW
     _DEV_MAX_I = 32  # A
 
     # config settings
@@ -132,7 +131,7 @@ class Charger:
     def _get_charger_current(self):
         if self.state != ChargerState.CHARGING:
             return 0
-        currents = [self._DEV_MAX_I, self._CAR_MAX_POWER, self.req_max_i]
+        currents = [self._DEV_MAX_I, self.req_max_i]
         return min(x for x in currents if x is not None)
 
     def is_charging(self):
