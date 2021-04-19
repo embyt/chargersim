@@ -47,7 +47,7 @@ class Charger:
     cur_i = None      # A, current charging current
     cur_u = None      # V, current phase voltage
     nr_phases = 3     # current number of used phases
-    auth_user = 0x4711171176abcdef
+    auth_user = None
 
     _last_update = None
 
@@ -81,6 +81,7 @@ class Charger:
         # this is always newly initialized
         self.nr_phases = phases
         self.cur_u = [230, 230, 230]
+        self.auth_user = 0x4711171176abcdef
 
     @staticmethod
     def _serialize(obj):

@@ -61,7 +61,7 @@ class DeviceCircontrol(Charger):
             'activePower': self.cur_power,
             'reduceCurrent': self.req_max_i,
             'limitCurrent': self.req_max_i,
-            'user': self.auth_user,
+            'user': "{:X}".format(self.auth_user),
         }
 
         if url_path == "/services/cpi/socketInfo.xml":
