@@ -27,7 +27,6 @@ STATE_TIMES = [
 
 class Charger:
     # constant settings
-    _CAR_MAX_POWER = 22  # kW
     _DEV_MAX_I = 32  # A
 
     # config settings
@@ -67,9 +66,10 @@ class Charger:
                 self.next_state_change = datetime.strptime(
                     datadump['next_state_change'], "%Y-%m-%dT%H:%M:%S")
                 self._last_update = datetime.strptime(
-                    datadump['_last_update'], "%Y-%m-%dT%H:%M:%S.%f")
+                    datadump['_last_update'], "%Y-%m-%dT%H:%M:%S")
                 self.cur_i = datadump['cur_i']
-                self.req_max_i = datadump['req_max_i']
+                self.e_total = datadump['e_total']
+                self.req_max_i = datadump['req_max_i'] if 'req_max_i' in datadump else None
         else:
             # do a fresh initialization of data
             self.state = ChargerState.IDLE
@@ -165,7 +165,7 @@ class Charger:
     def _get_charger_current(self):
         if self.state != ChargerState.CHARGING:
             return 0
-        currents = [self._DEV_MAX_I, self._CAR_MAX_POWER, self.req_max_i]
+        currents = [self._DEV_MAX_I, self.req_max_i]
         return min(x for x in currents if x is not None)
 
     def is_charging(self):
