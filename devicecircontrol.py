@@ -61,6 +61,7 @@ class DeviceCircontrol(Charger):
             'activePower': self.cur_power,
             'reduceCurrent': self.req_max_i,
             'limitCurrent': self.req_max_i,
+            'user': self.auth_user,
         }
 
         if url_path == "/services/cpi/socketInfo.xml":
@@ -120,7 +121,7 @@ class DeviceCircontrol(Charger):
                   <number > 1 < /number >
                   <state > {state} < /state >
                   <chargeId > 4A8EFBD2-8996-11EB-8996-11EBAEA263C0 < /chargeId >
-                  <user > DAFC6C72 < /user >
+                  <user > {user} < /user >
                   <requestDate > {requestDate} < /requestDate >
                   <beginDate > {beginDate} < /beginDate >
                   <endDate > -1.000000 < /endDate >
@@ -141,7 +142,7 @@ class DeviceCircontrol(Charger):
               <number > 1 < /number >
               <state > {state} < /state >
               <chargeId > 4A8EFBD2-8996-11EB-8996-11EBAEA263C0 < /chargeId >
-              <user > DAFC6C72 < /user >
+              <user > {user} < /user >
               <userType > RFID < /userType >
               <requestDate > {requestDate} < /requestDate >
               <beginDate > {beginDate} < /beginDate >
@@ -167,7 +168,7 @@ class DeviceCircontrol(Charger):
                 <chargingPhases > {chargingPhases} < /chargingPhases >
                 <state > {state} < /state >
                 <chargeId > 4A8EFBD2-8996-11EB-8996-11EBAEA263C0 < /chargeId >
-                <user > DAFC6C72 < /user >
+                <user > {user} < /user >
                 <chargeTime > {chargeTime} < /chargeTime >
                 <activeEnergy > {activeEnergy} < /activeEnergy >
                 <partialActiveEnergy > {partialActiveEnergy} < /partialActiveEnergy >
@@ -195,7 +196,7 @@ class DeviceCircontrol(Charger):
               <state > {state} < /state >
               <chargingPhases > {chargingPhases} < /chargingPhases >
               <chargeId > 4A8EFBD2-8996-11EB-8996-11EBAEA263C0 < /chargeId >
-              <user > DAFC6C72 < /user >
+              <user > {user} < /user >
               <chargeTime > {chargeTime} < /chargeTime >
               <reduceCurrent > {reduceCurrent} < /reduceCurrent >
               <activeEnergy > {activeEnergy} < /activeEnergy >

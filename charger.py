@@ -48,6 +48,7 @@ class Charger:
     cur_i = None      # A, current charging current
     cur_u = None      # V, current phase voltage
     nr_phases = 3     # current number of used phases
+    auth_user = 0x4711171176abcdef
 
     _last_update = None
 

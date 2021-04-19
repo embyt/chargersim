@@ -48,7 +48,7 @@ class DeviceGoe(Charger):
             "dws": str(self.e_session * 360000),
             "dwo": "0",
             "adi": "1",
-            "uby": "0",
+            "uby": str(self.auth_user) if self.is_charging() else "0",
             "eto": str(self.e_total * 10),
             "wst": "3",
             "nrg": [
