@@ -70,7 +70,7 @@ class DeviceGoe(Charger):
             "aho": "2",
             "afi": "8",
             "ama": str(self._DEV_MAX_I),
-            "amp": str(self.req_max_i),
+            "amp": str(self.req_max_i) if self.req_max_i is not None else str(self._DEV_MAX_I),
             "al1": "11",
             "al2": "12",
             "al3": "15",
