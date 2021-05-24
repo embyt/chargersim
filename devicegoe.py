@@ -37,7 +37,6 @@ class DeviceGoe(Charger):
             "rbc": "251",
             "rbt": "2208867",
             "car": str(car),
-            "amp": "10",
             "err": "0",
             "ast": "0",
             "alw": "1" if self.charger_current > 0 or not self.is_charging() else "0",
