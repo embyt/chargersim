@@ -235,6 +235,9 @@ class DeviceCircontrol(Charger):
         if url_path == "/services/cpi/stopCharge.xml":
             self.req_max_i = 0
             logging.info("stopping charging")
+        if url_path == "/services/cpi/pauseCharge.xml":
+            self.req_max_i = 0
+            logging.info("pausing charging")
 
         if url_path == "/services/cpi/startCharge.xml":
             self.req_max_i = self._DEV_MAX_I
