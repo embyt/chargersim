@@ -59,8 +59,8 @@ class DeviceCircontrol(Charger):
             'voltageL2': self.cur_u[1],
             'voltageL3': self.cur_u[2],
             'activePower': self.cur_power,
-            'reduceCurrent': self.req_max_i,
-            'limitCurrent': self.req_max_i,
+            'reduceCurrent': self.req_max_i if self.req_max_i is not None else "",
+            'limitCurrent': self.req_max_i if self.req_max_i is not None else self._DEV_MAX_I,
             'user': "{:X}".format(self.auth_user),
         }
 
@@ -238,9 +238,11 @@ class DeviceCircontrol(Charger):
         if url_path == "/services/cpi/pauseCharge.xml":
             self.req_max_i = 0
             logging.info("pausing charging")
+            return "", "text/plain"
 
         if url_path == "/services/cpi/startCharge.xml":
             self.req_max_i = self._DEV_MAX_I
             logging.info("resuming charging")
+            return "", "text/plain"
 
         return super().handle_post_data(url_path, post_data)
