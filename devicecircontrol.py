@@ -15,20 +15,20 @@ from charger import Charger, ChargerState
 # Ladestrom auf 16A stellen
 # Request to modify the plug current limit.
 # POST / services/cpi/plugCurrent.xml
-# <device >
-#     <id > deviceName.plugName.socketName</id>
-#     <current > int</current>
-# </device >
-# <id > deviceName.plugName.socketName</id> can be found in socketInfo.xml request
+# <device>
+#     <id>deviceName.plugName.socketName</id>
+#     <current>int</current>
+# </device>
+# <id>deviceName.plugName.socketName</id> can be found in socketInfo.xml request
 
 # Alternative:
 # Request to modify the “limit current” during * ongoing * transactions.
 # POST / services/cpi/reduceCurrent.xml
-# <device >
-#     <id > EVCommDevice</id>
-#     <current > int</current>
-# </device >
-# <id > EVCommDevice</id> can be found in socketInfo.xml request
+# <device>
+#     <id>EVCommDevice</id>
+#     <current>int</current>
+# </device>
+# <id>EVCommDevice</id> can be found in socketInfo.xml request
 
 
 class DeviceCircontrol(Charger):
@@ -102,9 +102,9 @@ class DeviceCircontrol(Charger):
               <id>672C24E1-780D-457B-BDD1-C1D3BB5A7D2B.476A1CEA-951D-436A-A6CC-F71B94E48725.4A2963B9-2831-4656-A9E7-328BA8490F52</id>
               <name>EVSE.PLUG.SOCKET MODE 3</name>
               <number>1</number>
-              <state > {state} < /state >
-              <previousState > 0 < /previousState >
-              <stateDate > {requestDate} < /stateDate >
+              <state>{state}</state>
+              <previousState>0</previousState>
+              <stateDate>{requestDate}</stateDate>
               <error>0</error>
               <vehicleConnected>{vehicleConnected}</vehicleConnected>
               <locked>{locked}</locked>
@@ -115,104 +115,104 @@ class DeviceCircontrol(Charger):
     def _get_charge_info(self, data):
         if self.is_charging():
             socket = """
-                <socket >
-                  <id > 4A2963B9-2831-4656-A9E7-328BA8490F52 < /id >
-                  <name > SOCKET MODE 3 < /name >
-                  <number > 1 < /number >
-                  <state > {state} < /state >
-                  <chargeId > 4A8EFBD2-8996-11EB-8996-11EBAEA263C0 < /chargeId >
-                  <user > {user} < /user >
-                  <requestDate > {requestDate} < /requestDate >
-                  <beginDate > {beginDate} < /beginDate >
-                  <endDate > -1.000000 < /endDate >
-                  <chargeTime > {chargeTime} < /chargeTime >
-                  <stopped > {stopped} < /stopped >
-                  <activeEnergy > {activeEnergy} < /activeEnergy >
-                  <partialActiveEnergy > {partialActiveEnergy} < /partialActiveEnergy >
-                </socket >
+                <socket>
+                  <id>4A2963B9-2831-4656-A9E7-328BA8490F52</id>
+                  <name>SOCKET MODE 3</name>
+                  <number>1</number>
+                  <state>{state}</state>
+                  <chargeId>4A8EFBD2-8996-11EB-8996-11EBAEA263C0</chargeId>
+                  <user>{user}</user>
+                  <requestDate>{requestDate}</requestDate>
+                  <beginDate>{beginDate}</beginDate>
+                  <endDate>-1.000000</endDate>
+                  <chargeTime>{chargeTime}</chargeTime>
+                  <stopped>{stopped}</stopped>
+                  <activeEnergy>{activeEnergy}</activeEnergy>
+                  <partialActiveEnergy>{partialActiveEnergy}</partialActiveEnergy>
+                </socket>
           """.format(**data)
         else:
             socket = ""
 
         return """
-          <chargesInfo >
-            <chargeInfo >
-              <id > 672C24E1-780D-457B-BDD1-C1D3BB5A7D2B.476A1CEA-951D-436A-A6CC-F71B94E48725 < /id >
-              <name > EVSE.PLUG < /name >
-              <number > 1 < /number >
-              <state > {state} < /state >
-              <chargeId > 4A8EFBD2-8996-11EB-8996-11EBAEA263C0 < /chargeId >
-              <user > {user} < /user >
-              <userType > RFID < /userType >
-              <requestDate > {requestDate} < /requestDate >
-              <beginDate > {beginDate} < /beginDate >
-              <endDate > -1.000000 < /endDate >
-              <chargeTime > {chargeTime} < /chargeTime >
-              <stopped > {stopped} < /stopped >
-              <stoppedByError > F < /stoppedByError >
-              <activeEnergy > {activeEnergy} < /activeEnergy >
-              <partialActiveEnergy > {partialActiveEnergy} < /partialActiveEnergy >
+          <chargesInfo>
+            <chargeInfo>
+              <id>672C24E1-780D-457B-BDD1-C1D3BB5A7D2B.476A1CEA-951D-436A-A6CC-F71B94E48725</id>
+              <name>EVSE.PLUG</name>
+              <number>1</number>
+              <state>{state}</state>
+              <chargeId>4A8EFBD2-8996-11EB-8996-11EBAEA263C0</chargeId>
+              <user>{user}</user>
+              <userType>RFID</userType>
+              <requestDate>{requestDate}</requestDate>
+              <beginDate>{beginDate}</beginDate>
+              <endDate>-1.000000</endDate>
+              <chargeTime>{chargeTime}</chargeTime>
+              <stopped>{stopped}</stopped>
+              <stoppedByError>F</stoppedByError>
+              <activeEnergy>{activeEnergy}</activeEnergy>
+              <partialActiveEnergy>{partialActiveEnergy}</partialActiveEnergy>
               {socket}
-            </chargeInfo >
-          </chargesInfo >
+            </chargeInfo>
+          </chargesInfo>
         """.format(socket=socket, **data)
 
     def _get_charge_state(self, data):
         if self.is_charging():
             socket = """
-              <socket >
-                <id > 4A2963B9-2831-4656-A9E7-328BA8490F52 < /id >
-                <name > SOCKET MODE 3 < /name >
-                <number > 1 < /number >
-                <reduceCurrent > {reduceCurrent} < /reduceCurrent >
-                <chargingPhases > {chargingPhases} < /chargingPhases >
-                <state > {state} < /state >
-                <chargeId > 4A8EFBD2-8996-11EB-8996-11EBAEA263C0 < /chargeId >
-                <user > {user} < /user >
-                <chargeTime > {chargeTime} < /chargeTime >
-                <activeEnergy > {activeEnergy} < /activeEnergy >
-                <partialActiveEnergy > {partialActiveEnergy} < /partialActiveEnergy >
-                <currentL1 > {currentL1} < /currentL1 >
-                <currentL2 > {currentL2} < /currentL2 >
-                <currentL3 > {currentL3} < /currentL3 >
-                <currentIII > 0 < /currentIII >
-                <voltageL1 > {voltageL1} < /voltageL1 >
-                <voltageL2 > {voltageL2} < /voltageL2 >
-                <voltageL3 > {voltageL3} < /voltageL3 >
-                <voltageIII > 0 < /voltageIII >
-                <activePower > {activePower} < /activePower >
-                <limitCurrent > {limitCurrent} < /limitCurrent >
-              </socket >
+              <socket>
+                <id>4A2963B9-2831-4656-A9E7-328BA8490F52</id>
+                <name>SOCKET MODE 3</name>
+                <number>1</number>
+                <reduceCurrent>{reduceCurrent}</reduceCurrent>
+                <chargingPhases>{chargingPhases}</chargingPhases>
+                <state>{state}</state>
+                <chargeId>4A8EFBD2-8996-11EB-8996-11EBAEA263C0</chargeId>
+                <user>{user}</user>
+                <chargeTime>{chargeTime}</chargeTime>
+                <activeEnergy>{activeEnergy}</activeEnergy>
+                <partialActiveEnergy>{partialActiveEnergy}</partialActiveEnergy>
+                <currentL1>{currentL1}</currentL1>
+                <currentL2>{currentL2}</currentL2>
+                <currentL3>{currentL3}</currentL3>
+                <currentIII>0</currentIII>
+                <voltageL1>{voltageL1}</voltageL1>
+                <voltageL2>{voltageL2}</voltageL2>
+                <voltageL3>{voltageL3}</voltageL3>
+                <voltageIII>0</voltageIII>
+                <activePower>{activePower}</activePower>
+                <limitCurrent>{limitCurrent}</limitCurrent>
+              </socket>
           """.format(**data)
         else:
             socket = ""
 
         return """
-          <chargesState >
-            <chargeState >
-              <id > 672C24E1-780D-457B-BDD1-C1D3BB5A7D2B.476A1CEA-951D-436A-A6CC-F71B94E48725 < /id >
-              <name > EVSE.PLUG < /name >
-              <number > 1 < /number >
-              <state > {state} < /state >
-              <chargingPhases > {chargingPhases} < /chargingPhases >
-              <chargeId > 4A8EFBD2-8996-11EB-8996-11EBAEA263C0 < /chargeId >
-              <user > {user} < /user >
-              <chargeTime > {chargeTime} < /chargeTime >
-              <reduceCurrent > {reduceCurrent} < /reduceCurrent >
-              <activeEnergy > {activeEnergy} < /activeEnergy >
-              <partialActiveEnergy > {partialActiveEnergy} < /partialActiveEnergy >
-              <currentL1 > {currentL1} < /currentL1 >
-              <currentL2 > {currentL2} < /currentL2 >
-              <currentL3 > {currentL3} < /currentL3 >
-              <currentIII > 0 < /currentIII >
-              <voltageL1 > {voltageL1} < /voltageL1 >
-              <voltageL2 > {voltageL2} < /voltageL2 >
-              <voltageL3 > {voltageL3} < /voltageL3 >
-              <voltageIII > 0 < /voltageIII >
-              <activePower > {activePower} < /activePower >
+          <chargesState>
+            <chargeState>
+              <id>672C24E1-780D-457B-BDD1-C1D3BB5A7D2B.476A1CEA-951D-436A-A6CC-F71B94E48725</id>
+              <name>EVSE.PLUG</name>
+              <number>1</number>
+              <state>{state}</state>
+              <chargingPhases>{chargingPhases}</chargingPhases>
+              <chargeId>4A8EFBD2-8996-11EB-8996-11EBAEA263C0</chargeId>
+              <user>{user}</user>
+              <chargeTime>{chargeTime}</chargeTime>
+              <reduceCurrent>{reduceCurrent}</reduceCurrent>
+              <activeEnergy>{activeEnergy}</activeEnergy>
+              <partialActiveEnergy>{partialActiveEnergy}</partialActiveEnergy>
+              <currentL1>{currentL1}</currentL1>
+              <currentL2>{currentL2}</currentL2>
+              <currentL3>{currentL3}</currentL3>
+              <currentIII>0</currentIII>
+              <voltageL1>{voltageL1}</voltageL1>
+              <voltageL2>{voltageL2}</voltageL2>
+              <voltageL3>{voltageL3}</voltageL3>
+              <voltageIII>0</voltageIII>
+              <activePower>{activePower}</activePower>
               {socket}
-            </chargeState >
-          </chargesState >
+            </chargeState>
+          </chargesState>
         """.format(socket=socket, **data)
 
     def handle_post_data(self, url_path, post_data):
