@@ -17,7 +17,7 @@ class ChargerState(Enum):
 
 # minutes for duration of states
 STATE_TIMES = [
-    180,  # IDLE
+    1,  # IDLE
     3,    # PLUGGED_BEFORE_CHARGE
     160,  # CHARGING
     10,   # STOPPED_AFTER_CHARGING

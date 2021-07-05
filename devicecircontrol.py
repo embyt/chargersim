@@ -112,13 +112,15 @@ class DeviceCircontrol(Charger):
           </socketsState>
         """.format(**data)
 
-    def _get_charge_info(self, data):
+    def _get_socket(self, data):
         if self.is_charging():
             socket = """
                 <socket>
                   <id>4A2963B9-2831-4656-A9E7-328BA8490F52</id>
                   <name>SOCKET MODE 3</name>
                   <number>1</number>
+                  <reduceCurrent>{reduceCurrent}</reduceCurrent>
+                  <chargingPhases>{chargingPhases}</chargingPhases>
                   <state>{state}</state>
                   <chargeId>4A8EFBD2-8996-11EB-8996-11EBAEA263C0</chargeId>
                   <user>{user}</user>
@@ -129,11 +131,24 @@ class DeviceCircontrol(Charger):
                   <stopped>{stopped}</stopped>
                   <activeEnergy>{activeEnergy}</activeEnergy>
                   <partialActiveEnergy>{partialActiveEnergy}</partialActiveEnergy>
+                  <currentL1>{currentL1}</currentL1>
+                  <currentL2>{currentL2}</currentL2>
+                  <currentL3>{currentL3}</currentL3>
+                  <currentIII>0</currentIII>
+                  <voltageL1>{voltageL1}</voltageL1>
+                  <voltageL2>{voltageL2}</voltageL2>
+                  <voltageL3>{voltageL3}</voltageL3>
+                  <voltageIII>0</voltageIII>
+                  <activePower>{activePower}</activePower>
+                  <limitCurrent>{limitCurrent}</limitCurrent>
                 </socket>
           """.format(**data)
         else:
             socket = ""
+        return socket
 
+    def _get_charge_info(self, data):
+        socket = self._get_socket()
         return """
           <chargesInfo>
             <chargeInfo>
@@ -158,35 +173,7 @@ class DeviceCircontrol(Charger):
         """.format(socket=socket, **data)
 
     def _get_charge_state(self, data):
-        if self.is_charging():
-            socket = """
-              <socket>
-                <id>4A2963B9-2831-4656-A9E7-328BA8490F52</id>
-                <name>SOCKET MODE 3</name>
-                <number>1</number>
-                <reduceCurrent>{reduceCurrent}</reduceCurrent>
-                <chargingPhases>{chargingPhases}</chargingPhases>
-                <state>{state}</state>
-                <chargeId>4A8EFBD2-8996-11EB-8996-11EBAEA263C0</chargeId>
-                <user>{user}</user>
-                <chargeTime>{chargeTime}</chargeTime>
-                <activeEnergy>{activeEnergy}</activeEnergy>
-                <partialActiveEnergy>{partialActiveEnergy}</partialActiveEnergy>
-                <currentL1>{currentL1}</currentL1>
-                <currentL2>{currentL2}</currentL2>
-                <currentL3>{currentL3}</currentL3>
-                <currentIII>0</currentIII>
-                <voltageL1>{voltageL1}</voltageL1>
-                <voltageL2>{voltageL2}</voltageL2>
-                <voltageL3>{voltageL3}</voltageL3>
-                <voltageIII>0</voltageIII>
-                <activePower>{activePower}</activePower>
-                <limitCurrent>{limitCurrent}</limitCurrent>
-              </socket>
-          """.format(**data)
-        else:
-            socket = ""
-
+        socket = self._get_socket()
         return """
           <chargesState>
             <chargeState>
