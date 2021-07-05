@@ -148,7 +148,7 @@ class DeviceCircontrol(Charger):
         return socket
 
     def _get_charge_info(self, data):
-        socket = self._get_socket()
+        socket = self._get_socket(data)
         return """
           <chargesInfo>
             <chargeInfo>
@@ -173,7 +173,7 @@ class DeviceCircontrol(Charger):
         """.format(socket=socket, **data)
 
     def _get_charge_state(self, data):
-        socket = self._get_socket()
+        socket = self._get_socket(data)
         return """
           <chargesState>
             <chargeState>
